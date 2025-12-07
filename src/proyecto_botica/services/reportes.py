@@ -8,6 +8,7 @@ from datetime import datetime
 from ..models.producto import Producto
 from ..repositories.inventario import Inventario
 
+
 class GeneradorReportes:
     """
     Genera reportes y estadísticas del inventario.
@@ -25,3 +26,22 @@ class GeneradorReportes:
     def cantidad_total_productos(self) -> int:
         """Cuenta la cantidad total de TIPOS de productos (número de filas en el inventario)."""
         return len(self.inventario.repositorio.obtener_todos())
+    
+    def total_items_stock(self) -> int:
+        """Calcula el total de ITEMS (unidades) en stock."""
+        productos = self.inventario.repositorio.obtener_todos()
+        return sum(p.cantidad for p in productos)
+    
+    def producto_mas_caro(self) -> Optional[Producto]:
+        """Obtiene el producto con el precio unitario más alto."""
+        productos = self.inventario.repositorio.obtener_todos()
+        return max(productos, key=lambda p: p.precio) if productos else None
+
+    def producto_mas_barato(self) -> Optional[Producto]:
+        """Obtiene el producto con el precio unitario más bajo."""
+        productos = self.inventario.repositorio.obtener_todos()
+        return min(productos, key=lambda p: p.precio) if productos else None
+
+    def reporte_completo(self) -> Dict[str, Any]:
+        """Genera un diccionario con todos los datos del reporte."""
+        productos_bajo_stock = self.inventario.obtener_productos_bajo_stock()
